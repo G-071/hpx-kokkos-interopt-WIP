@@ -9,8 +9,10 @@ jobs:
   build-and-test:
     # See: https://docs.github.com/en/free-pro-team@latest/actions/learn-github-actions/managing-complex-workflows#using-a-build-matrix
     runs-on: ubuntu-latest
+    container: stellargroup/hpx:dev # get container with HPX
     strategy:
       fail-fast: false
+      max-parallel: 1 # We need both cores for the concurrency tests...
       matrix:
         compiler_variant: ['g++', 'clang++']
         build_type: ['Release', 'RelWithDebInfo', 'Debug']
@@ -29,14 +31,14 @@ jobs:
     - name: Configure CMake
       shell: bash
       working-directory: ${{github.workspace}}/build
-      run: cmake $GITHUB_WORKSPACE -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} -DCMAKE_CXX_COMPILER=${{ matrix.compiler_variant }} -DCPPUDDLE_WITH_TESTS=ON -DCPPUDDLE_WITH_COUNTERS=ON
+      run: cmake $GITHUB_WORKSPACE -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} -DCMAKE_CXX_COMPILER=${{ matrix.compiler_variant }} -DCPPUDDLE_WITH_TESTS=ON -DCPPUDDLE_WITH_COUNTERS=ON -DCPPUDDLE_WITH_HPX=ON
 
     - name: Build
       working-directory: ${{github.workspace}}/build
       shell: bash
-      run: cmake --build . --config $BUILD_TYPE
+      run: cmake --build . --config $BUILD_TYPE -j2
 
     - name: Test
       working-directory: ${{github.workspace}}/build
       shell: bash
-      run: ctest -C $BUILD_TYPE
+      run: ctest -C $BUILD_TYPE -j2
