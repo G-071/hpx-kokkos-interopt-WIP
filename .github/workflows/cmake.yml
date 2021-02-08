@@ -23,7 +23,7 @@ jobs:
     - name: Install Test Dependencies
       # Need program options to pass test parameters to test executables
       # Need valgrind for memory leak tests
-      run: sudo apt-get update && sudo apt-get install -yq libboost-program-options-dev valgrind clang
+      run: apt-get update && apt-get install -yq libboost-program-options-dev valgrind clang
       
     - name: Create Build Environment
       run: cmake -E make_directory ${{github.workspace}}/build
