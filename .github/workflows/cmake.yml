@@ -26,19 +26,20 @@ jobs:
       run: apt-get update && apt-get install -yq libboost-program-options-dev valgrind clang
       
     - name: Create Build Environment
-      run: cmake -E make_directory ${{github.workspace}}/build
+      #run: cmake -E make_directory ${{github.workspace}}/build
+      run: mkdir -p build
 
     - name: Configure CMake
       shell: bash
-      working-directory: ${{github.workspace}}/build
-      run: cmake . -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} -DCMAKE_CXX_COMPILER=${{ matrix.compiler_variant }} -DCPPUDDLE_WITH_TESTS=ON -DCPPUDDLE_WITH_COUNTERS=ON -DCPPUDDLE_WITH_HPX=ON
+      #working-directory: ${{github.workspace}}/build
+      run: cmake . -Bbuild -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} -DCMAKE_CXX_COMPILER=${{ matrix.compiler_variant }} -DCPPUDDLE_WITH_TESTS=ON -DCPPUDDLE_WITH_COUNTERS=ON -DCPPUDDLE_WITH_HPX=ON
 
     - name: Build
-      working-directory: ${{github.workspace}}/build
+      #working-directory: ${{github.workspace}}/build
       shell: bash
-      run: cmake --build . --config $BUILD_TYPE -j2
+      run:  cd build && cmake --build . --config $BUILD_TYPE -j2
 
     - name: Test
-      working-directory: ${{github.workspace}}/build
+      #working-directory: ${{github.workspace}}/build
       shell: bash
-      run: ctest -C $BUILD_TYPE -j2
+      run: cd build && ctest -C $BUILD_TYPE -j2
